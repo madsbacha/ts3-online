@@ -64,10 +64,7 @@ func fetchTsStatus(host, username, password string) Status {
 			}
 			usernames = append(usernames, match[1])
 		}
-
-		log.Println(response)
 	}
-	log.Println(usernames)
 
 	return Status{
 		online: len(usernames),
