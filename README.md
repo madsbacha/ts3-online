@@ -11,7 +11,7 @@ services:
   ts3-online:
     build: .
     environment: 
-      - TS_HOST=host.docker.internal
+      - TS_HOST=host.docker.internal:10011
       - TS_USERNAME=serveradmin
       - TS_PASSWORD=secret
     ports: 

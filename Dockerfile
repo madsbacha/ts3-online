@@ -22,8 +22,8 @@ FROM gcr.io/distroless/base-debian10
 
 WORKDIR /
 
-COPY --from=build /server /server
 COPY templates/index.tmpl /templates/index.tmpl
+COPY --from=build /server /server
 
 ENV PORT 8080
 ENV GIN_MODE release
