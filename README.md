@@ -1,5 +1,7 @@
 # ts3-online
 
+[![go report card](https://goreportcard.com/badge/github.com/madsbacha/ts3-online "go report card")](https://goreportcard.com/report/github.com/madsbacha/ts3-online)
+
 The previous version, which is implemented in python and
 uses a redis server, is located here:
 https://github.com/madsbacha/ts3-online-counter

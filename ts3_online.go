@@ -14,17 +14,17 @@ import (
 	"time"
 )
 
-type Status struct {
-	mu sync.Mutex
-	online int
+type status struct {
+	mu        sync.Mutex
+	online    int
 	usernames []string
 }
 
-var status Status
+var currentStatus status
 
 var userRegex = regexp.MustCompile(`\sclient_nickname=(.*?)\s`)
 
-func fetchTsStatus(host, username, password string) Status {
+func fetchTsStatus(host, username, password string) status {
 	timeout, err := time.ParseDuration("5s")
 	if err != nil {
 		panic(err)
@@ -66,8 +66,8 @@ func fetchTsStatus(host, username, password string) Status {
 		}
 	}
 
-	return Status{
-		online: len(usernames),
+	return status{
+		online:    len(usernames),
 		usernames: usernames,
 	}
 }
@@ -78,24 +78,24 @@ func fetchTsStatusCron() {
 	password := os.Getenv("TS_PASSWORD")
 
 	newStatus := fetchTsStatus(host, username, password)
-	status.set(newStatus.online, newStatus.usernames)
+	currentStatus.set(newStatus.online, newStatus.usernames)
 }
 
-func (st *Status) set(online int, usernames []string) {
+func (st *status) set(online int, usernames []string) {
 	st.mu.Lock()
 	defer st.mu.Unlock()
 	st.online = online
 	st.usernames = usernames
 }
 
-func (st *Status) get() (int, []string) {
+func (st *status) get() (int, []string) {
 	st.mu.Lock()
 	defer st.mu.Unlock()
 	return st.online, st.usernames
 }
 
 func main() {
-	status.set(0, make([]string, 0))
+	currentStatus.set(0, make([]string, 0))
 
 	s := gocron.NewScheduler(time.UTC)
 	s.SetMaxConcurrentJobs(1, gocron.RescheduleMode)
@@ -108,7 +108,7 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/index.tmpl")
 	r.GET("/api", func(c *gin.Context) {
-		online, usernames := status.get()
+		online, usernames := currentStatus.get()
 
 		c.JSON(200, gin.H{
 			"count": online,
@@ -116,7 +116,7 @@ func main() {
 		})
 	})
 	r.GET("/", func(c *gin.Context) {
-		online, usernames := status.get()
+		online, usernames := currentStatus.get()
 
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"count": online,
