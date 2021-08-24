@@ -42,6 +42,9 @@ func fetchTsStatus(host, username, password string) status {
 
 	cmd := fmt.Sprintf("login %v %v\nuse 1\nclientlist\nquit\n", username, password)
 	_, err = conn.Write([]byte(cmd))
+	if err != nil {
+		panic(err)
+	}
 
 	usernames := make([]string, 0)
 	for {
