@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-co-op/gocron"
-	"github.com/ziutek/telnet"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
+	"github.com/ziutek/telnet"
 )
 
 type status struct {
@@ -62,7 +64,7 @@ func fetchTsStatus(host, username, password string) status {
 
 		matches := userRegex.FindAllStringSubmatch(response, -1)
 		for _, match := range matches {
-			if match[1] == username {
+			if strings.HasPrefix(match[1], username) {
 				continue
 			}
 			usernames = append(usernames, match[1])
