@@ -26,6 +26,22 @@ var currentStatus status
 
 var userRegex = regexp.MustCompile(`\sclient_nickname=(.*?)\s`)
 
+func excludeUsername(username string) bool {
+	exclude_usernames, exists := os.LookupEnv("EXCLUDE_USERNAMES")
+	if !exists {
+		return false
+	}
+	usernames := strings.Split(exclude_usernames, ",")
+
+	for _, val := range usernames {
+		if username == val {
+			return true
+		}
+	}
+
+	return false
+}
+
 func fetchTsStatus(host, username, password string) status {
 	timeout, err := time.ParseDuration("5s")
 	if err != nil {
@@ -64,7 +80,7 @@ func fetchTsStatus(host, username, password string) status {
 
 		matches := userRegex.FindAllStringSubmatch(response, -1)
 		for _, match := range matches {
-			if strings.HasPrefix(match[1], username) {
+			if strings.HasPrefix(match[1], username) || excludeUsername(match[1]) {
 				continue
 			}
 			usernames = append(usernames, match[1])
