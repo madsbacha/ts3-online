@@ -39,7 +39,8 @@ function onError(e) {
 }
 
 function connect() {
-    ws = new WebSocket(`ws://${location.host}/websocket`);
+    const protocol = location.protocol.startsWith("https") ? "wss" : "ws"
+    ws = new WebSocket(`${protocol}://${location.host}/websocket`);
     ws.onclose = onClose;
     ws.onmessage = onMessage;
     ws.onerror = onError;
