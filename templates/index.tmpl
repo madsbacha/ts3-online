@@ -64,12 +64,13 @@
 </head>
 <body>
 <section>
-  <h1>{{ .count }} online</h1>
-  <ul>
+  <h1><span id="online">{{ .count }}</span> online</h1>
+  <ul id="users">
     {{ range .users }}
     <li>{{ . }}</li>
     {{ end }}
   </ul>
 </section>
+<script src="main.js"></script>
 </body>
 </html>
