@@ -59,7 +59,7 @@ func main() {
 	s.StartAsync()
 
 	r := gin.Default()
-	r.StaticFile("/main.js", "static/main.js")
+	r.Static("/static", "static")
 	r.LoadHTMLGlob("templates/index.tmpl")
 	r.GET("/api", func(c *gin.Context) {
 		online, usernames := currentStatus.get()
