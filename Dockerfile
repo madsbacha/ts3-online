@@ -23,6 +23,7 @@ FROM gcr.io/distroless/base-debian10
 WORKDIR /
 
 COPY templates/index.tmpl /templates/index.tmpl
+COPY static /static
 COPY --from=build /server /server
 
 ENV PORT 8080
