@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -50,9 +53,18 @@ func websocketEndpoint(w http.ResponseWriter, r *http.Request) {
 func main() {
 	currentStatus.set(0, make([]string, 0))
 
+	pullInterval := 5
+	if val, ok := os.LookupEnv("PULL_INTERVAL"); ok {
+		parsedVal, err := strconv.Atoi(val)
+		if err != nil {
+			panic(fmt.Errorf("Invalid PULL_INTERVAL value"))
+		}
+		pullInterval = parsedVal
+	}
+
 	s := gocron.NewScheduler(time.UTC)
 	s.SetMaxConcurrentJobs(1, gocron.RescheduleMode)
-	_, err := s.Every(5).Seconds().Do(fetchTsStatusCron)
+	_, err := s.Every(pullInterval).Seconds().Do(fetchTsStatusCron)
 	if err != nil {
 		panic(err)
 	}
