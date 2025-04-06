@@ -42,7 +42,12 @@ func fetchTsStatus(host, username, password string) status {
 	}
 
 	err = conn.SkipUntil("command.\n\r")
-	if err != nil {
+	if err == io.EOF {
+		return status{
+			Online:    0,
+			Usernames: make([]string, 0),
+		}
+	} else if err != nil {
 		panic(err)
 	}
 
