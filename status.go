@@ -30,31 +30,38 @@ func (st *status) get() (int, []string) {
 	return st.Online, st.Usernames
 }
 
+func emptyStatus() status {
+	return status{
+		Online:    0,
+		Usernames: make([]string, 0),
+	}
+}
+
 func fetchTsStatus(host, username, password string) status {
 	timeout, err := time.ParseDuration("5s")
 	if err != nil {
 		panic(err)
 	}
 	conn, err := telnet.DialTimeout("tcp", host, timeout)
-
 	if err != nil {
-		panic(err)
+		log.Println("dial:", err)
+		return emptyStatus()
 	}
+	defer conn.Close()
 
 	err = conn.SkipUntil("command.\n\r")
 	if err == io.EOF {
-		return status{
-			Online:    0,
-			Usernames: make([]string, 0),
-		}
+		return emptyStatus()
 	} else if err != nil {
-		panic(err)
+		log.Println("skip until:", err)
+		return emptyStatus()
 	}
 
 	cmd := fmt.Sprintf("login %v %v\nuse 1\nclientlist\nquit\n", username, password)
 	_, err = conn.Write([]byte(cmd))
 	if err != nil {
-		panic(err)
+		log.Println("write:", err)
+		return emptyStatus()
 	}
 
 	usernames := make([]string, 0)
@@ -64,7 +71,8 @@ func fetchTsStatus(host, username, password string) status {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			log.Panic(err)
+			log.Println("read:", err)
+			break
 		}
 
 		if response == "error id=0 msg=ok\n\r" {
