@@ -26,8 +26,8 @@ COPY templates/index.tmpl /templates/index.tmpl
 COPY static /static
 COPY --from=build /server /server
 
-ENV PORT 8080
-ENV GIN_MODE release
+ENV PORT=8080
+ENV GIN_MODE=release
 
 EXPOSE 8080
 
