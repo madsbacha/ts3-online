@@ -5,6 +5,7 @@ go 1.27.1
 require (
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-co-op/gocron v1.37.0
+	github.com/go-co-op/gocron/v2 v2.22.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/ziutek/telnet v0.1.0
 )
